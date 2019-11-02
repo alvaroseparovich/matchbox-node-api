@@ -1,20 +1,16 @@
-routes = {
-    'candidates'        : require('./candidates'), 
-    'jobs'              : require('./jobs'),
-    'relationship'      : require('./relationship'),
-}
+const Candidates = require('../models/candidate');
 
-module.exports = (app)=>{
-    app.get(`/*`, (req,resp)=>{
-        resp.send(`GET - ${req.url} \n`);
+module.exports = (app, router)=>{
+
+    router.post('/register', async (req,resp)=>{
+        try{
+            const candidate = await Candidates.create(req.body).catch();
+            return resp.send({candidate}) ;
+        }catch(err){
+            console.log(err);
+            return resp.status(400).send({error:'Fail to register candidate'});
+        }
     });
-    app.post(`/*`, (req,resp)=>{
-        resp.send(`POST \n`);
-    });
-    app.put(`/*`, (req,resp)=>{
-        resp.send(`PUT \n`);
-    });
-    app.delete(`/*`, (req,resp)=>{
-        resp.send(`DELETE \n`);
-    });
+
+    app.use('/candidate', router);
 }
