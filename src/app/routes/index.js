@@ -12,5 +12,10 @@ module.exports = (app, router)=>{
         }
     });
 
-    app.use('/candidate', router);
+    router.get('/', async (req, resp)=>{
+        allCandidates = await Candidates.find();
+        return resp.send( allCandidates );
+    })
+
+    app.use('/candidates', router);
 }
