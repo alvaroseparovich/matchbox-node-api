@@ -44,7 +44,6 @@ CandidateSchema.pre('save', async function(next){
     next();
 })
 
-
 const Candidate = db.model('Candidate',CandidateSchema);
 
 module.exports = Candidate;
