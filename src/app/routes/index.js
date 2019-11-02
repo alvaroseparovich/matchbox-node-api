@@ -1,9 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const Candidates = require('../models/candidate');
-
-module.exports = (app, express)=>{
+module.exports = (app, Router)=>{
     const routes = {};
     
     //Import all routes at once
@@ -14,7 +12,7 @@ module.exports = (app, express)=>{
 
         const filename = file.split('.')[0];
         
-        routes[ filename ] = require( path.resolve( __dirname, filename ) )(app,express); 
+        routes[ filename ] = require( path.resolve( __dirname, filename ) )(app,Router); 
     });
 
     //Use all routes at once

@@ -1,6 +1,8 @@
-module.exports = (app,express)=>{
+const Candidates = require('../models/candidate');
 
-    const router = express.Router();
+module.exports = (app,Router)=>{
+
+    const router = Router();
 
     router.get('/', async (req, resp)=>{
         allCandidates = await Candidates.find();
@@ -28,6 +30,16 @@ module.exports = (app,express)=>{
 
         }
     });
+
+    router.put('/', async (req, resp)=>{
+        allCandidates = await Candidates.find();
+        return resp.send( allCandidates );
+    })
+
+    router.delete('/', async (req, resp)=>{
+        allCandidates = await Candidates.find();
+        return resp.send( allCandidates );
+    })
 
     return router;
 }
