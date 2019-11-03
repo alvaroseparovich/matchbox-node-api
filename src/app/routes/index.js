@@ -1,33 +1,23 @@
-const Candidates = require('../models/candidate');
+const fs = require('fs');
+const path = require('path');
 
-module.exports = (app, router)=>{
+module.exports = (app, Router)=>{
+    const routes = {};
+    
+    //Import all routes at once
+    fs
+    .readdirSync(__dirname)
+    .filter(file => ((file.indexOf('.')) !==0 && (file !== 'index.js')))
+    .forEach(file => {
 
-    router.post('/register', async (req,resp)=>{
-        const {email} = req.body;
-        try{
-            if(await Candidates.findOne({email})){
-                return resp.status(400).send({erro:'This email has already been used'})
-            }
-
-            const candidate = await Candidates.create(req.body).catch();
-            
-            candidate.password = undefined;
-            
-            return resp.send({candidate}) ;
-
-        }
-        catch(err){
-
-            console.log(err);
-            return resp.status(400).send({error:'Fail to register candidate'});
-
-        }
+        const filename = file.split('.')[0];
+        
+        routes[ filename ] = require( path.resolve( __dirname, filename ) )(app,Router); 
     });
 
-    router.get('/', async (req, resp)=>{
-        allCandidates = await Candidates.find();
-        return resp.send( allCandidates );
-    })
-
-    app.use('/candidates', router);
+    //Use all routes at once
+    Object.keys(routes)
+        .forEach(index=>{
+            app.use(`/${index}`, routes[index]);
+        })
 }
