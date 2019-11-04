@@ -1,4 +1,4 @@
-const Jobs = require('../models/job');
+const Jobs = require('../models/schema/job');
 
 module.exports = (app,Router)=>{
 
