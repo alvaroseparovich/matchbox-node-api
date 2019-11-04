@@ -1,3 +1,5 @@
+const HttpException = require('./httpException');
+
 module.exports = (functionHandler) => {
     
     return (req, res, next) => {
@@ -15,7 +17,7 @@ module.exports = (functionHandler) => {
 }
 
 class ErrorResponse {
-    constructor (error, massege, context) {
+    constructor (error, message, context) {
         this.Error = error;
         this.Message = message;
         this.Context = context;

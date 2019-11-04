@@ -1,5 +1,6 @@
 
 const Schema = require('../models/schema/schemaCandidates');
+const HttpError = require('../infrastruct/httpError');
 
 module.exports = class OperatorCandidates{
 
@@ -12,10 +13,10 @@ module.exports = class OperatorCandidates{
     }
 
     static createCandidate = async (candidate)=>{
-        const emailExists = !!await Schema.findOne({email: cadidate.email});
         
+        const emailExists = !!await Schema.findOne({email: cadidate.email});
         if(emailExists) 
-            throw new HttpError('This email has already been used', 409)
+            throw new HttpError('This email has already been used', 409);
     
         const newCandidate = await Schema.create(cadidate).catch();
         
