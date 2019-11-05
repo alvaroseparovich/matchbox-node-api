@@ -19,5 +19,24 @@ module.exports = (app, Router)=>{
     Object.keys(routes)
         .forEach(index=>{
             app.use(`/${index}`, routes[index]);
-        })
+        }
+    );
+
+    app.use((req,resp,next)=>{
+        const error = new Error('Not Found');
+        error.status = 404;
+        next(error);
+    })
+
+    app.use((error,req,resp,next)=>{
+        resp.status(error.status || 500);
+        resp.json({
+            'error':{
+            'message':error.message
+        }})
+    }
+    )
+
+
+    
 }

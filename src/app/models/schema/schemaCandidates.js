@@ -1,40 +1,40 @@
-const db = require('../database');
+const db = require('../../database');
 const bcrypt = require('bcryptjs');
 
 const CandidateSchema = new db.Schema({
     name:{
         type:String,
-        require:true,
+        required:[true,'A name is required'],
     },
     email:{
         type:String,
-        require:true,
+        required:[true,'A email is required'],
     },
     password:{
         type:String,
-        require:true,
+        required:[true,'A password is required'],
         select:false,
     },
 
     birthday:{
         type:Date,
-        require:false,
+        required:false,
     },
     cpf:{
         type:Number,
-        require:false,
+        required:false,
     },
     universityName:{
         type:String,
-        require:false,
+        required:false,
     },
     courseName:{
         type:String,
-        require:false,
+        required:false,
     },
     conclusionDate:{
         type:Date,
-        require:false,
+        required:false,
     },
 });
 
