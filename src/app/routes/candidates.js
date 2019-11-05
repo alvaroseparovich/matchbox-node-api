@@ -5,8 +5,8 @@ module.exports = (app,Router)=>{
 
     const router = Router();
 
-    router.get( '/', (req,resp)=>{Operator.getAll(req,resp)} );
-    
+    router.get( '/', (req,resp)=>{ Operator.getAll(req,resp)} );
+
     router.post( '/register', (req,resp)=>{ Operator.createCandidate(req,resp)} );
 
     router.get( '/candidate/:id', (req,resp)=>{ Operator.getCandidateById(req,resp)} );

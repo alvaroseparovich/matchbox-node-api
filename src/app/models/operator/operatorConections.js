@@ -4,7 +4,7 @@ const exMsg = require('../../infrastruct/exceptionMessage');
 
 module.exports = class OperatorCandidates{
 
-    static createConnection = async (req, resp)=>{
+    static async createConnection(req, resp){
 
         try{            
             const candidateId = req.body._id; 
@@ -59,7 +59,7 @@ module.exports = class OperatorCandidates{
         
     }
 
-    static removeConnection = async (req, resp)=>{
+    static async removeConnection(req, resp){
 
         try{            
             const candidateId = req.body._id; 
@@ -101,7 +101,7 @@ module.exports = class OperatorCandidates{
 }
 
 
-const removeJobFrom = (func, candidateId, jobId)=>{
+function removeJobFrom(func, candidateId, jobId){
     func( candidateId, 
         {$pull:{jobs:{
             _id:jobId

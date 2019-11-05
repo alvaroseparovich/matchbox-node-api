@@ -3,14 +3,14 @@ const exMsg = require('../../infrastruct/exceptionMessage');
 
 module.exports = class OperatorJobs{
 
-    static getAll = async (req,resp)=>{
+    static async getAll (req,resp){
 
         const allJobs = await Schema.find();
 
         return resp.status(200).send( allJobs );
     }
 
-    static createJob = async (req, resp)=>{
+    static async createJob (req, resp){
 
         try{
         
@@ -25,7 +25,7 @@ module.exports = class OperatorJobs{
             return resp.status(500).send( exMsg(500) );}
     }
 
-    static getJobById = async (req, resp)=>{
+    static async getJobById (req, resp){
 
         try{
             const job = await Schema.find({'_id':req.params.id});
@@ -42,7 +42,7 @@ module.exports = class OperatorJobs{
     
     }
 
-    static updateJob = async (req, resp)=>{
+    static async updateJob (req, resp){
 
         try{
             if( req.body.candidates )
@@ -65,7 +65,7 @@ module.exports = class OperatorJobs{
         
     }
 
-    static deleteJob = async (req, resp)=>{
+    static async deleteJob (req, resp){
 
         try{
 
