@@ -16,7 +16,7 @@ module.exports = class OperatorCandidates{
 
             const emailExists = !!await Schema.findOne({email: req.body.email});
             if(emailExists) 
-                resp.status(409).send( exMsg('This email has already been used') );
+                return resp.status(409).send( exMsg('This email has already been used') );
         
             const newCandidate = await Schema.create(req.body);
 
@@ -52,7 +52,6 @@ module.exports = class OperatorCandidates{
 
         try{
             const result = await Schema.findByIdAndUpdate(req.params.id, req.body);
-
             
             if( req.body.email )
                 return resp.status(409).send( exMsg('You can not change a email. ') );
