@@ -36,6 +36,13 @@ const CandidateSchema = new db.Schema({
         type:Date,
         required:false,
     },
+    jobs: [
+        {
+            _id: String,
+            name: String, 
+            limitDate: Date
+        }
+    ],
 });
 
 CandidateSchema.pre('save', async function(next){

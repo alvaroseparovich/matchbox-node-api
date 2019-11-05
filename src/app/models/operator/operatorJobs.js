@@ -45,6 +45,8 @@ module.exports = class OperatorJobs{
     static updateJob = async (req, resp)=>{
 
         try{
+            if( req.body.candidates )
+                return resp.status(409).send( exMsg('You can not change candidates field. ') );
             const result = await Schema.findByIdAndUpdate(req.params.id, req.body);
 
             //todo: If there is no job with this id

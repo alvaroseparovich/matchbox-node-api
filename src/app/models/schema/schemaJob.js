@@ -17,6 +17,15 @@ const JobSchema = new db.Schema({
         type:Number,
         required:false,
     },
+    candidates: [
+        {
+            _id: String,
+            name: String, 
+            email: String,
+            universityName: String,
+            courseName: String 
+        }
+    ],
 });
 
 const Job = db.model('Job',JobSchema);

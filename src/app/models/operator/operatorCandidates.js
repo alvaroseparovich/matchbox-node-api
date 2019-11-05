@@ -51,11 +51,12 @@ module.exports = class OperatorCandidates{
     static updateCandidate = async (req, resp)=>{
 
         try{
-            const result = await Schema.findByIdAndUpdate(req.params.id, req.body);
             
             if( req.body.email )
                 return resp.status(409).send( exMsg('You can not change a email. ') );
-
+            if( req.body.jobs )
+                return resp.status(409).send( exMsg('You can not change jobs field. ') );
+            
             const result = await Schema.findByIdAndUpdate(req.params.id, req.body);
             
             const candidateUpdated = await Schema.findOne({'_id':req.params.id});
