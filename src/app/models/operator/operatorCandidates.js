@@ -56,7 +56,8 @@ module.exports = class OperatorCandidates{
             if( req.body.email )
                 return resp.status(409).send( exMsg('You can not change a email. ') );
 
-            //todo: If there is no candidate with this id
+            const result = await Schema.findByIdAndUpdate(req.params.id, req.body);
+            
             const candidateUpdated = await Schema.findOne({'_id':req.params.id});
 
             return resp.send(candidateUpdated);
