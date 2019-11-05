@@ -6,5 +6,7 @@ module.exports = (app,Router)=>{
     
     router.put( '/add/:jobId', ( req,resp )=>{ Operator.createConnection( req,resp )} )
 
+    router.delete( '/remove/:jobId', ( req,resp )=>{ Operator.removeConnection( req,resp )} )
+
     return router;
 }

@@ -59,6 +59,45 @@ module.exports = class OperatorCandidates{
         
     }
 
+    static removeConnection = async (req, resp)=>{
+
+        try{            
+            const candidateId = req.body._id; 
+            const jobId = req.params.jobId;
+
+            if(!candidateId) return resp.status(412).send( exMsg('Id of candidate was missing') );
+
+            const candidateInfo = await SchCandidates.findOne({'_id':candidateId});
+            await SchJobs.findByIdAndUpdate(jobId, 
+                {$pull:{candidates:{
+                        _id:candidateId
+                    }}}
+                );
+
+            const jobInfo = await SchJobs.findOne({'_id':jobId});
+            await SchCandidates.findByIdAndUpdate(candidateId,
+                {$pull:{jobs:{
+                        _id:jobId
+                    }}}
+                );
+            
+            const candidateUpdated = await SchCandidates.findOne({'_id':candidateId});
+            const jobUpdated = await SchJobs.findOne({'_id':jobId});
+
+            return resp.send({candidate:candidateUpdated,job:jobUpdated});
+
+        }
+        catch(err){
+            if(err.name == 'CastError') return resp.status(404).send( exMsg(404.3) );
+            if(err.name == 'ValidationError') return resp.status(412).send( exMsg(err.message) );
+            
+
+            console.log(err)
+            return resp.status(500).send( exMsg(500) );
+        }
+
+    }
+
 }
 
 
