@@ -37,6 +37,7 @@ codeMessage = {
     //Internal Use
     404.1:'Candidate Not Found. ',
     404.2:'Job Not Found. ',
+    404.3:'Job or candidate Not Found. ',
 };
 
 

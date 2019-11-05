@@ -25,7 +25,7 @@ module.exports = class OperatorCandidates{
             return resp.send(newCandidate);
 
         }catch(err){
-            if(err.name == 'ValidationError') return resp.status(409).send( exMsg(err.message) );
+            if(err.name == 'ValidationError') return resp.status(412).send( exMsg(err.message) );
 
             console.log(err); 
             return resp.status(500).send( exMsg(500) );}
@@ -51,19 +51,21 @@ module.exports = class OperatorCandidates{
     static updateCandidate = async (req, resp)=>{
 
         try{
-            const result = await Schema.findByIdAndUpdate(req.params.id, req.body);
             
             if( req.body.email )
                 return resp.status(409).send( exMsg('You can not change a email. ') );
-
-            //todo: If there is no candidate with this id
+            if( req.body.jobs )
+                return resp.status(409).send( exMsg('You can not change jobs field. ') );
+            
+            const result = await Schema.findByIdAndUpdate(req.params.id, req.body);
+            
             const candidateUpdated = await Schema.findOne({'_id':req.params.id});
 
             return resp.send(candidateUpdated);
         }
         catch(err){
             if(err.name == 'CastError') return resp.status(404).send( exMsg(404.1) );
-            if(err.name == 'ValidationError') return resp.status(409).send( exMsg(err.message) );
+            if(err.name == 'ValidationError') return resp.status(412).send( exMsg(err.message) );
 
 
             console.log(err)
