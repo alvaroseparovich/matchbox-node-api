@@ -25,7 +25,7 @@ module.exports = class OperatorCandidates{
             return resp.send(newCandidate);
 
         }catch(err){
-            if(err.name == 'ValidationError') return resp.status(409).send( exMsg(err.message) );
+            if(err.name == 'ValidationError') return resp.status(412).send( exMsg(err.message) );
 
             console.log(err); 
             return resp.status(500).send( exMsg(500) );}
@@ -63,7 +63,7 @@ module.exports = class OperatorCandidates{
         }
         catch(err){
             if(err.name == 'CastError') return resp.status(404).send( exMsg(404.1) );
-            if(err.name == 'ValidationError') return resp.status(409).send( exMsg(err.message) );
+            if(err.name == 'ValidationError') return resp.status(412).send( exMsg(err.message) );
 
 
             console.log(err)
