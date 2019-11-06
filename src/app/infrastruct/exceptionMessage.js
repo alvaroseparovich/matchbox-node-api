@@ -1,6 +1,7 @@
-module.exports = (message)=>{
-    if(typeof message == 'number') return {error:{message:codeMessage[message]}}; 
-        return{error:{message:message}};
+module.exports = (message, status=0)=>{
+      if(typeof message == 'number') { message = codeMessage[message] };
+      if(status){return {error:{message:message},status:status}}
+      return{error:{message:message}};
     }
 
 codeMessage = {
