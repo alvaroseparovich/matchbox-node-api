@@ -1,7 +1,7 @@
 const Operator = require('../models/operator/operatorCandidates');
 
 
-module.exports = (app,Router)=>{
+module.exports = (Router)=>{
 
     const router = Router();
 

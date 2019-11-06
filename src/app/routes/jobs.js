@@ -1,6 +1,6 @@
 const Operator = require('../models/operator/operatorJobs');
 
-module.exports = (app,Router)=>{
+module.exports = (Router)=>{
 
     const router = Router();
 

@@ -12,7 +12,7 @@ module.exports = (app, Router)=>{
 
         const filename = file.split('.')[0];
         
-        routes[ filename ] = require( path.resolve( __dirname, filename ) )(app,Router); 
+        routes[ filename ] = require( path.resolve( __dirname, filename ) )(Router); 
     });
 
     //Use all main routes at once
@@ -37,6 +37,6 @@ module.exports = (app, Router)=>{
     }
     )
 
-
+    return app;
     
 }
