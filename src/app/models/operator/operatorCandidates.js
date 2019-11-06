@@ -1,5 +1,6 @@
 const Schema = require('../schema/schemaCandidates');
 const exMsg = require('../../infrastruct/exceptionMessage');
+const catcher = require('../../infrastruct/catcher');
 
 module.exports = class OperatorCandidates{
 
@@ -31,19 +32,19 @@ module.exports = class OperatorCandidates{
             return resp.status(500).send( exMsg(500) );}
     }
 
-    static async getCandidateById(req, resp){
+    static async routeGetCandidateById(req, resp){
 
-        try{
-            const candidate = await Schema.find({'_id':req.params.id});
+        catcher( await this.getCandidateById(req.params.id), resp );
+    
+    }
 
-            return resp.send( candidate );
+    static async getCandidateById(id){
 
-        }
+        try{ return await Schema.find({'_id':id}) }
         catch(err){
-            if(err.name == 'CastError') return resp.status(404).send( exMsg(404.1) );
-
+            if(err.name == 'CastError') return  exMsg(404.1,404);
             console.log(err); 
-            return resp.status(500).send( exMsg(500) );
+            return exMsg(500,500);
         }
     
     }
