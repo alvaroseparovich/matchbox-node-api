@@ -97,6 +97,7 @@ module.exports = class OperatorCandidates{
 
     }
 
+
     static async responseAddJobInCandidate(candidateId,jobId,resp){
         const response = await this.addJobInCandidate(candidateId, jobId);
         if(!!response.error){
@@ -106,7 +107,12 @@ module.exports = class OperatorCandidates{
     }
 
     static async addJobInCandidate(candidateId, jobId){
-        return await this.upDateRelation( candidateId,{$push:{jobs:{_id:jobId}}}, CandidatesSchema);
+        //TODO: CALL a Get JOB to Fill the Function Above
+        return await this.upDateRelation( candidateId,{$push:{jobs:{
+            _id:job._id,
+            name: job.name,
+            limitDate: job.limitDate
+        }}}, CandidatesSchema);
 
     }
 
@@ -115,8 +121,14 @@ module.exports = class OperatorCandidates{
 
     }
 
-    static async addCandidateInJob(candidateId, jobId){
-        return await this.upDateRelation( jobId,{$push:{candidates:{_id:candidateId}}}, JobsSchema );
+    static async addCandidateInJob(candidate, jobId){
+        return await this.upDateRelation( jobId,{$push:{candidates:{
+            _id:candidate._id,
+            name: candidate.name, 
+            email: candidate.email,
+            universityName: candidate.universityName,
+            courseName: candidate.courseName 
+         }}}, JobsSchema );
 
     }
 
