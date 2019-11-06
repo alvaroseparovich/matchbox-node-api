@@ -9,7 +9,7 @@ module.exports = (app,Router)=>{
 
     router.post( '/register', (req,resp)=>{ Operator.createCandidate(req,resp)} );
 
-    router.get( '/candidate/:id', (req,resp)=>{ Operator.routeGetCandidateById(req,resp)} );
+    router.get( '/candidate/:id', (req,resp)=>{ Operator.routeGetCandidateById(req.param.id,resp)} );
 
     router.put( '/candidate/:id', (req,resp)=>{ Operator.updateCandidate(req,resp)} );
 

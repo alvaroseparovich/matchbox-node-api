@@ -32,9 +32,9 @@ module.exports = class OperatorCandidates{
             return resp.status(500).send( exMsg(500) );}
     }
 
-    static async routeGetCandidateById(req, resp){
+    static async routeGetCandidateById(id, resp){
 
-        catcher( await this.getCandidateById(req.params.id), resp );
+        catcher( await this.getCandidateById(id), resp );
     
     }
 
