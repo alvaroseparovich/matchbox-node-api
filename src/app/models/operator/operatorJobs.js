@@ -3,29 +3,29 @@ const exMsg = require('../../infrastruct/exceptionMessage');
 
 module.exports = class OperatorJobs{
 
-    static async routeGetAll (req,resp,next){
+    static async routeGetAll (next){
 
-        next( this.getAll() );
+        next( await this.getAll() );
     }
 
-    static async routeCreateJob (req, resp,next){
-
-        next(this.createJob(req.body));
+    static async routeCreateJob (json,next){
+        
+        next( await this.createJob(json));
     }
 
-    static async routeGetJobById (req, resp,next){
+    static async routeGetJobById (id,next){
 
-        next( this.getJobById(req.params.id));   
+        next( await this.getJobById(id));   
     }
 
-    static async routeUpdateJob (req, resp,next){
+    static async routeUpdateJob (json, id, next){
 
-        next( this.updateJob(req.body, req.params.id));        
+        next( await this.updateJob(json, id));        
     }
 
-    static async routeDeleteJob (req, resp,next){
+    static async routeDeleteJob (id,next){
 
-        next( this.deleteJob(req.params.id));
+        next( await this.deleteJob(id));
 
     }
 
