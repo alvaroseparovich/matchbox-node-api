@@ -34,25 +34,82 @@ module.exports = class OperatorCandidates{
         })
     }
 
+    static async responseAttatchJobsToACandidate(list,candidateId, next){
+        list = list.filter(item=>{
+            if (!!item._id){return item}
+        });
+    
+        await this.removeJobsFromCandidate(list,candidateId);
+        const candidate = await this.addJobsInCandidate(list,candidateId);
+        
+        await this.removeCandidateFromJobs(list,candidateId);
+        const jobs = await this.addCandidateInJobs(list,candidateId);
+    
+        next({
+            candidate:candidate,
+            jobs:jobs
+        })
+    }
+    
+    static async responseRemoveJobsFromACandidate(list,candidateId, next){
+        list = list.filter(item=>{
+            if (!!item._id){return item}
+        });
+    
+        await this.removeJobsFromCandidate(list,candidateId);
+        await this.removeCandidateFromJobs(list,candidateId);
+    
+        next({
+            message:'Conections removed. '
+        })
+    }
+    
+
+    //Operations Single Job to Many Candidates
     //List prepared
-    static async removeJobFromCandidates( candidateId, jobId){
-        return await this.upDateManyRelation( candidateId,{$pull:{jobs:{_id:jobId}}}, CandidatesSchema);
+    static async removeJobFromCandidates( candidates, jobId){
+        return await this.upDateManyRelation( candidates,{$pull:{jobs:{_id:jobId}}}, CandidatesSchema);
 
     }//List prepared
-    static async addCandidatesInJob(candidate, jobId){
+    static async addCandidatesInJob(candidates, jobId){
         return await this.upDateRelation( jobId,{$push:{candidates:{
-            $each:candidate 
+            $each:candidates
          }}}, JobsSchema );
     }//List prepared
-    static async removeCandidatesFromJob(candidate, jobId){
+    static async removeCandidatesFromJob(candidates, jobId){
         return await this.upDateRelation( jobId,{$pull:{candidates:{
-            $in:candidate 
+            $in:candidates
          }}}, JobsSchema );
     }//List prepared
-    static async addJobInCandidates(candidateId, jobId){
-        return await this.upDateManyRelation( candidateId,{$push:{jobs:{_id:jobId}}}, CandidatesSchema);
+    static async addJobInCandidates(candidates, jobId){
+        return await this.upDateManyRelation( candidates,{$push:{jobs:{_id:jobId}}}, CandidatesSchema);
+
+    }
+    
+    //Operations Single Candidate to Many Jobs
+    //List prepared
+    static async removeCandidateFromJobs( jobs, candidateId){
+        return await this.upDateManyRelation( jobs,{$pull:{candidates:{_id:candidateId}}}, JobSchema);
 
     }//List prepared
+    static async addJobsInCandidate(jobs, candidateId){
+        return await this.upDateRelation( candidateId,{$push:{jobs:{
+            $each:jobs
+        }}}, JobsSchema );
+    }//List prepared
+    static async removeJobsFromCandidate(jobs, candidateId){
+        return await this.upDateRelation( candidateId,{$pull:{jobs:{
+            $in:jobs
+        }}}, JobsSchema );
+    }//List prepared
+    static async addCandidateInJobs(jobs, candidateId){
+        return await this.upDateManyRelation( jobs,{$push:{candidates:{_id:candidateId}}}, JobSchema);
+
+    }
+
+
+
+    //List prepared
     static async upDateManyRelation(idAfected,relation, SchemaAfected){
 
         try{
@@ -69,7 +126,6 @@ module.exports = class OperatorCandidates{
             return exMsg(500, 500) ;
         }
     }
-    
     static async upDateRelation(idAfected,relation, SchemaAfected){
 
         try{
