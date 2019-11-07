@@ -3,7 +3,7 @@ const exMsg = require('../../infrastruct/exceptionMessage');
 
 module.exports = class OperatorJobs{
 
-    static async getAll (req,resp,next){
+    static async routeGetAll (req,resp,next){
 
         next( this.getAll() );
     }
