@@ -1,6 +1,8 @@
 MatchBox test app
 ----------
 
+To test it type:
+```npm test```
 All the routes and pathern to the API are above:
 
 
