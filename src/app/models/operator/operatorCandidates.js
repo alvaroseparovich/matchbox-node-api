@@ -3,91 +3,104 @@ const exMsg = require('../../infrastruct/exceptionMessage');
 
 module.exports = class OperatorCandidates{
 
-    static async getAll(req,resp){
+    static async routeGetAll(next){
+        next( await this.getAll());
 
-        const allCandidates = await Schema.find();
+    }
+    static async routeCreateCandidate(objInfo, next){
+        next( await  this.createCandidate(objInfo) );
 
-        return resp.status(200).send( allCandidates );
+    }
+    static async routeGetCandidateById(id, next){
+        next( await this.getCandidateById(id));
+    
+    }
+    static async routeUpdateCandidate (json, id, next){
+        next( await this.updateCandidate(json, id) );
+        
+    }
+    static async routeDeleteCandidate(id, next){
+        next(await this.deleteCandidate(id));
     }
 
-    static async createCandidate(req, resp){
+    static async getAll(){
+        
+        try{
+            
+            const response =  await Schema.find();
+            return response;
 
+        }catch(err){
+            return exMsg(err,500);
+        }
+
+
+    }
+    static async createCandidate(objInfo){
+        
         try{
 
-            const emailExists = !!await Schema.findOne({email: req.body.email});
+            const emailExists = !!await Schema.findOne({email: objInfo.email});
             if(emailExists) 
-                return resp.status(409).send( exMsg('This email has already been used') );
+                return exMsg('This email has already been used',409);
         
-            const newCandidate = await Schema.create(req.body);
+            const newCandidate = await Schema.create(objInfo);
 
             newCandidate.password = undefined;
             
-            return resp.send(newCandidate);
+            return newCandidate;
 
         }catch(err){
-            if(err.name == 'ValidationError') return resp.status(412).send( exMsg(err.message) );
-
+            if(err.name == 'ValidationError') return exMsg(err.message, 412);
             console.log(err); 
-            return resp.status(500).send( exMsg(500) );}
+            return exMsg(500,500);}
     }
+    static async getCandidateById(id){
 
-    static async getCandidateById(req, resp){
-
-        try{
-            const candidate = await Schema.find({'_id':req.params.id});
-
-            return resp.send( candidate );
-
-        }
+        try{ return await Schema.find({_id:id}) }
         catch(err){
-            if(err.name == 'CastError') return resp.status(404).send( exMsg(404.1) );
-
+            if(err.name == 'CastError') return  exMsg(404.1,404);
             console.log(err); 
-            return resp.status(500).send( exMsg(500) );
+            return exMsg(500,500);
         }
     
     }
-
-    static async updateCandidate (req, resp){
+    static async updateCandidate (objToAtualize, id){
 
         try{
             
-            if( req.body.email )
-                return resp.status(409).send( exMsg('You can not change a email. ') );
-            if( req.body.jobs )
-                return resp.status(409).send( exMsg('You can not change jobs field. ') );
+            if( objToAtualize.email )
+                return exMsg('You can not change a email. ',409 );
+            if( objToAtualize.jobs )
+                return exMsg('You can not change jobs field. ',409 );
             
-            const result = await Schema.findByIdAndUpdate(req.params.id, req.body);
+            const result = await Schema.findByIdAndUpdate(id, objToAtualize);
             
-            const candidateUpdated = await Schema.findOne({'_id':req.params.id});
+            const candidateUpdated = await Schema.findOne({'_id':id});
 
-            return resp.send(candidateUpdated);
+            return candidateUpdated;
         }
         catch(err){
-            if(err.name == 'CastError') return resp.status(404).send( exMsg(404.1) );
-            if(err.name == 'ValidationError') return resp.status(412).send( exMsg(err.message) );
-
-
-            console.log(err)
-            return resp.status(500).send( exMsg(500) );
+            if(err.name == 'CastError') return exMsg( 404.1, 404 );
+            if(err.name == 'ValidationError') return exMsg(err.message,412 );
+            console.log(err);
+            return exMsg(500, 500 );
         }
         
     }
-
-    static async deleteCandidate(req, resp){
+    static async deleteCandidate(id){
 
         try{
 
-            const result = await Schema.findByIdAndDelete(req.params.id);
+            await Schema.findByIdAndDelete(id);
             
-            return resp.send({message:'Candidate Deleted.'});
+            return {message:'Candidate Deleted.'};
 
         }
         catch(err){
-            if(err.name == 'CastError') return resp.status(404).send( exMsg(404.1) );
-
+            if(err.name == 'CastError') return exMsg(404.1, 404) ;
             console.log(err)
-            return resp.status(500).send( exMsg(500) );
+            return exMsg(500,500);
         }
 
     }

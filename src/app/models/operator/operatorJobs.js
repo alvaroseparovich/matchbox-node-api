@@ -3,84 +3,101 @@ const exMsg = require('../../infrastruct/exceptionMessage');
 
 module.exports = class OperatorJobs{
 
-    static async getAll (req,resp){
+    static async routeGetAll (next){
 
-        const allJobs = await Schema.find();
-
-        return resp.status(200).send( allJobs );
+        next( await this.getAll() );
     }
 
-    static async createJob (req, resp){
+    static async routeCreateJob (json,next){
+        
+        next( await this.createJob(json));
+    }
+
+    static async routeGetJobById (id,next){
+
+        next( await this.getJobById(id));   
+    }
+
+    static async routeUpdateJob (json, id, next){
+
+        next( await this.updateJob(json, id));        
+    }
+
+    static async routeDeleteJob (id,next){
+
+        next( await this.deleteJob(id));
+
+    }
+
+
+    static async getAll (){
+        const allJobs = await Schema.find();
+        return allJobs ;
+
+    }
+    static async createJob (body){
 
         try{
         
-            const newJob = await Schema.create(req.body);
-            
-            return resp.send(newJob);
+            const newJob = await Schema.create(body);
+
+            return newJob;
 
         }catch(err){
-            if(err.name == 'ValidationError') return resp.status(412).send( exMsg(err.message) );
+            if(err.name == 'ValidationError') return  exMsg(err.message,412);
 
             console.log(err); 
-            return resp.status(500).send( exMsg(500) );}
+            return  exMsg(500,500);
+        }
     }
-
-    static async getJobById (req, resp){
+    static async getJobById (id){
 
         try{
-            const job = await Schema.find({'_id':req.params.id});
-
-            return resp.send( job );
+            
+            return await Schema.find({'_id':id});
 
         }
         catch(err){
-            if(err.name == 'CastError') return resp.status(404).send( exMsg(404.2) );
+            if(err.name == 'CastError') return exMsg(404.2,400);
 
             console.log(err); 
-            return resp.status(500).send( exMsg(500) );
+            return exMsg(500,500) ;
         }
-    
     }
-
-    static async updateJob (req, resp){
+    static async updateJob (body, id){
 
         try{
-            if( req.body.candidates )
-                return resp.status(409).send( exMsg('You can not change candidates field. ') );
-            const result = await Schema.findByIdAndUpdate(req.params.id, req.body);
+            if( body.candidates )
+                return exMsg('You can not change candidates field. ',409 );
+            await Schema.findByIdAndUpdate(id, body);
 
             //todo: If there is no job with this id
-            const jobUpdated = await Schema.findOne({'_id':req.params.id});
+            return await Schema.findOne({'_id':id});
 
-            return resp.send(jobUpdated);
         }
         catch(err){
-            if(err.name == 'CastError') return resp.status(404).send( exMsg(404.2) );
-            if(err.name == 'ValidationError') return resp.status(412).send( exMsg(err.message) );
+            if(err.name == 'CastError') return exMsg(404.2,404);
+            if(err.name == 'ValidationError')  return exMsg(err.message,412);
 
 
             console.log(err)
-            return resp.status(500).send( exMsg(500) );
+            return exMsg(500,500);
         }
-        
     }
-
-    static async deleteJob (req, resp){
+    static async deleteJob (id){
 
         try{
 
-            const result = await Schema.findByIdAndDelete(req.params.id);
-            
-            return resp.send({message:'Job Deleted.'});
+            const result = await Schema.findByIdAndDelete(id);
+            console.log(result);
+            return {message:'Job Deleted.'};
 
         }
         catch(err){
-            if(err.name == 'CastError') return resp.status(404).send( exMsg(404.2) );
+            if(err.name == 'CastError') return exMsg(404.2,404);
 
             console.log(err)
-            return resp.status(500).send( exMsg(500) );
+            return exMsg(500,500);
         }
-
     }
-
 }

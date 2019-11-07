@@ -1,15 +1,15 @@
+const express = require('express');
+const router = express.Router();
+
 const Operator = require('../models/operator/operatorConections');
 
-module.exports = (app,Router)=>{
+    router.put( '/attatchcandidates/:jobId', ( req,resp,next )=>{ Operator.responseAttatchCandidatesToAJob( req.body , req.params.jobId ,next )} )
 
-    const router = Router();
-    
-    router.put( '/add/:jobId', ( req,resp )=>{ Operator.createConnection( req.body._id , req.params.jobId , resp )} )
+    router.put( '/unattatchcandidates/:jobId', ( req,resp,next )=>{ Operator.responseRemoveCandidatesFromAJob( req.body , req.params.jobId ,next )} )
 
-    router.delete( '/remove/:jobId', ( req,resp )=>{ Operator.removeConnection( req,resp )} )
+    router.put( '/attatchjobs/:candidateId', ( req,resp,next )=>{ Operator.responseAttatchCandidatesToAJob( req.body , req.params.candidateId ,next )} )
 
-    router.put( '/attatchjob/:jobId', ( req,resp )=>{ Operator.responseAddJobInCandidate( req.body._id , req.params.jobId , resp )} )
+    router.put( '/unattatchjobs/:candidateId', ( req,resp,next )=>{ Operator.responseRemoveCandidatesFromAJob( req.body , req.params.jobId ,next )} )
 
-    
-    return router;
-}
+
+module.exports = router;

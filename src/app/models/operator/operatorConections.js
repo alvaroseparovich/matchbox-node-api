@@ -4,127 +4,128 @@ const exMsg = require('../../infrastruct/exceptionMessage');
 
 module.exports = class OperatorCandidates{
 
-    //Create a conection between a job and a candidate
-    //------------------------------------------------
-    static async createConnection(candidateId, jobId, resp){
+    static async responseAttatchCandidatesToAJob(list,jobId, next){
+        list = list.filter(item=>{
+            if (!!item._id){return item}
+        });
+
+        await this.removeCandidatesFromJob(list,jobId);
+        const job = await this.addCandidatesInJob(list,jobId);
+        
+        await this.removeJobFromCandidates(list,jobId);
+        const candidates = await this.addJobInCandidates(list,jobId);
+
+        next({
+            job:job,
+            candidates:candidates
+        })
+    }
+
+    static async responseRemoveCandidatesFromAJob(list,jobId, next){
+        list = list.filter(item=>{
+            if (!!item._id){return item}
+        });
+
+        await this.removeCandidatesFromJob(list,jobId);
+        await this.removeJobFromCandidates(list,jobId);
+
+        next({
+            message:'Conections removed. '
+        })
+    }
+
+    static async responseAttatchJobsToACandidate(list,candidateId, next){
+        list = list.filter(item=>{
+            if (!!item._id){return item}
+        });
+    
+        await this.removeJobsFromCandidate(list,candidateId);
+        const candidate = await this.addJobsInCandidate(list,candidateId);
+        
+        await this.removeCandidateFromJobs(list,candidateId);
+        const jobs = await this.addCandidateInJobs(list,candidateId);
+    
+        next({
+            candidate:candidate,
+            jobs:jobs
+        })
+    }
+    
+    static async responseRemoveJobsFromACandidate(list,candidateId, next){
+        list = list.filter(item=>{
+            if (!!item._id){return item}
+        });
+    
+        await this.removeJobsFromCandidate(list,candidateId);
+        await this.removeCandidateFromJobs(list,candidateId);
+    
+        next({
+            message:'Conections removed. '
+        })
+    }
+    
+
+    //Operations Single Job to Many Candidates
+    //List prepared
+    static async removeJobFromCandidates( candidates, jobId){
+        return await this.upDateManyRelation( candidates,{$pull:{jobs:{_id:jobId}}}, CandidatesSchema);
+
+    }//List prepared
+    static async addCandidatesInJob(candidates, jobId){
+        return await this.upDateRelation( jobId,{$push:{candidates:{
+            $each:candidates
+         }}}, JobsSchema );
+    }//List prepared
+    static async removeCandidatesFromJob(candidates, jobId){
+        return await this.upDateRelation( jobId,{$pull:{candidates:{
+            $in:candidates
+         }}}, JobsSchema );
+    }//List prepared
+    static async addJobInCandidates(candidates, jobId){
+        return await this.upDateManyRelation( candidates,{$push:{jobs:{_id:jobId}}}, CandidatesSchema);
+
+    }
+    
+    //Operations Single Candidate to Many Jobs
+    //List prepared
+    static async removeCandidateFromJobs( jobs, candidateId){
+        return await this.upDateManyRelation( jobs,{$pull:{candidates:{_id:candidateId}}}, JobSchema);
+
+    }//List prepared
+    static async addJobsInCandidate(jobs, candidateId){
+        return await this.upDateRelation( candidateId,{$push:{jobs:{
+            $each:jobs
+        }}}, JobsSchema );
+    }//List prepared
+    static async removeJobsFromCandidate(jobs, candidateId){
+        return await this.upDateRelation( candidateId,{$pull:{jobs:{
+            $in:jobs
+        }}}, JobsSchema );
+    }//List prepared
+    static async addCandidateInJobs(jobs, candidateId){
+        return await this.upDateManyRelation( jobs,{$push:{candidates:{_id:candidateId}}}, JobSchema);
+
+    }
+
+
+
+    //List prepared
+    static async upDateManyRelation(idAfected,relation, SchemaAfected){
 
         try{
-
-            if(!candidateId) return resp.status(412).send( exMsg('Id of candidate was missing') );
-
-            const candidateInfo = await CandidatesSchema.findOne({'_id':candidateId});
-            await JobsSchema.findByIdAndUpdate(jobId, 
-                {$pull:{candidates:{
-                        _id:candidateId
-                    }}}
-                );
+            if(!idAfected) return exMsg('A id was missing',412);
             
-            await JobsSchema.findByIdAndUpdate( jobId, 
-                {$push:{candidates:{
-                    _id:candidateInfo._id,
-                    name: candidateInfo.name, 
-                    email: candidateInfo.email,
-                    universityName: candidateInfo.universityName,
-                    courseName: candidateInfo.courseName 
-                 }}});
+            await SchemaAfected.updateMany({_id:idAfected},relation);
 
-
-            const jobInfo = await JobsSchema.findOne({'_id':jobId});
-            await CandidatesSchema.findByIdAndUpdate(candidateId,
-                {$pull:{jobs:{
-                        _id:jobId
-                    }}}
-                );
-            
-            await CandidatesSchema.findByIdAndUpdate( candidateId, 
-                {$push:{jobs:{
-                    _id:jobInfo._id,
-                    name: jobInfo.name,
-                    limitDate: jobInfo.limitDate
-                }}});
-            
-            const candidateUpdated = await CandidatesSchema.findOne({'_id':candidateId});
-            const jobUpdated = await JobsSchema.findOne({'_id':jobId});
-
-            return resp.send([candidateUpdated,jobUpdated]);
+            return await SchemaAfected.find({'_id':idAfected});
         }
         catch(err){
-            if(err.name == 'CastError') return resp.status(404).send( exMsg(404.3) );
-            if(err.name == 'ValidationError') return resp.status(412).send( exMsg(err.message) );
-
-
-            console.log(err);
-            return resp.status(500).send( exMsg(500) );
-        }
-        
-    }
-
-    //Remove Conections between a job and a candidate
-    //-----------------------------------------------
-    static async removeConnection(req, resp){
-
-        try{            
-            const candidateId = req.body._id; 
-            const jobId = req.params.jobId;
-
-            if(!candidateId) return resp.status(412).send( exMsg('Id of candidate was missing') );
-
-            //await CandidatesSchema.findOne({'_id':candidateId});
-            await JobsSchema.findByIdAndUpdate(jobId, 
-                {$pull:{candidates:{
-                        _id:candidateId
-                    }}}
-                );
-
-            //await JobsSchema.findOne({'_id':jobId});
-            const candidateUpdated =  await this.removeJobFromCandidate( candidateId, jobId );
-            if( !candidateUpdated[error] ){throw(candidateUpdated)}
+            if(err.name == 'CastError') return exMsg(404.3, 404);
+            if(err.name == 'ValidationError') return exMsg(err.message, 412);
             
-            const jobUpdated = await JobsSchema.findOne({'_id':jobId});
-
-            return resp.send({candidate:candidateUpdated,job:jobUpdated});
-
+            return exMsg(500, 500) ;
         }
-        catch(err){
-            if(err.name == 'CastError') return resp.status(404).send( exMsg(404.3) );
-            if(err.name == 'ValidationError') return resp.status(412).send( exMsg(err.message) );
-            if(!err.error) return resp.status(err.error.status).send( err.error.message );
-            
-
-            console.log(err);
-            return resp.status(500).send( exMsg(500) );
-        }
-
     }
-
-    static async responseAddJobInCandidate(candidateId,jobId,resp){
-        const response = await this.addJobInCandidate(candidateId, jobId);
-        if(!!response.error){
-            return resp.status(response.status).send( exMsg( response.error.message ) );
-        }
-        return resp.send(response);
-    }
-
-    static async addJobInCandidate(candidateId, jobId){
-        return await this.upDateRelation( candidateId,{$push:{jobs:{_id:jobId}}}, CandidatesSchema);
-
-    }
-
-    static async removeJobFromCandidate(candidateId, jobId){
-        return await this.upDateRelation( candidateId,{$pull:{jobs:{_id:jobId}}}, CandidatesSchema);
-
-    }
-
-    static async addCandidateInJob(candidateId, jobId){
-        return await this.upDateRelation( jobId,{$push:{candidates:{_id:candidateId}}}, JobsSchema );
-
-    }
-
-    static async removeCandidateFromJob(candidateId, jobId){
-        return await this.upDateRelation( jobId,{$pull:{candidates:{_id:candidateId}}}, JobsSchema ) ;
-
-    }
-
     static async upDateRelation(idAfected,relation, SchemaAfected){
 
         try{
@@ -141,5 +142,4 @@ module.exports = class OperatorCandidates{
             return exMsg(500, 500) ;
         }
     }
-
 }
