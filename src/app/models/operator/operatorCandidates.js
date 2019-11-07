@@ -3,24 +3,24 @@ const exMsg = require('../../infrastruct/exceptionMessage');
 
 module.exports = class OperatorCandidates{
 
-    static async routerGetAll(req,resp,next){
+    static async routeGetAll(next){
         next( await this.getAll());
 
     }
-    static async routeCreateCandidate(objInfo, resp, next){
+    static async routeCreateCandidate(objInfo, next){
         next( await  this.createCandidate(objInfo) );
 
     }
-    static async routeGetCandidateById(id, resp, next){
+    static async routeGetCandidateById(id, next){
         next( await this.getCandidateById(id));
     
     }
-    static async routeUpdateCandidate (req, resp, next){
-        next( await this.updateCandidate(req.body, req.params.id) );
+    static async routeUpdateCandidate (json, id, next){
+        next( await this.updateCandidate(json, id) );
         
     }
-    static async routeDeleteCandidate(id, resp, next){
-        next(await this.deleteCandidate(id),resp);
+    static async routeDeleteCandidate(id, next){
+        next(await this.deleteCandidate(id));
     }
 
     static async getAll(){
