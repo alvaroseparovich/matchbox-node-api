@@ -6,11 +6,11 @@ module.exports = class OperatorCandidates{
 
     //Create a conection between a job and a candidate
     //------------------------------------------------
-    static async createConnection(candidateId, jobId, resp){
+    static async createConnection(candidateId, jobId, resp,next){
 
         try{
 
-            if(!candidateId) return resp.status(412).send( exMsg('Id of candidate was missing') );
+            if(!candidateId) next( exMsg('Id of candidate was missing',412) );
 
             const candidateInfo = await CandidatesSchema.findOne({'_id':candidateId});
             await JobsSchema.findByIdAndUpdate(jobId, 
@@ -46,28 +46,28 @@ module.exports = class OperatorCandidates{
             const candidateUpdated = await CandidatesSchema.findOne({'_id':candidateId});
             const jobUpdated = await JobsSchema.findOne({'_id':jobId});
 
-            return resp.send([candidateUpdated,jobUpdated]);
+            next([candidateUpdated,jobUpdated]);
         }
         catch(err){
-            if(err.name == 'CastError') return resp.status(404).send( exMsg(404.3) );
-            if(err.name == 'ValidationError') return resp.status(412).send( exMsg(err.message) );
+            if(err.name == 'CastError') next( exMsg(404.3,404) );
+            if(err.name == 'ValidationError') next( exMsg(err.message,412) );
 
 
             console.log(err);
-            return resp.status(500).send( exMsg(500) );
+            next( exMsg(500,500) );
         }
         
     }
 
     //Remove Conections between a job and a candidate
     //-----------------------------------------------
-    static async removeConnection(req, resp){
+    static async removeConnection(req, resp, next){
 
         try{            
             const candidateId = req.body._id; 
             const jobId = req.params.jobId;
 
-            if(!candidateId) return resp.status(412).send( exMsg('Id of candidate was missing') );
+            if(!candidateId) next( exMsg('Id of candidate was missing',412) );
 
             //await CandidatesSchema.findOne({'_id':candidateId});
             await JobsSchema.findByIdAndUpdate(jobId, 
@@ -82,28 +82,28 @@ module.exports = class OperatorCandidates{
             
             const jobUpdated = await JobsSchema.findOne({'_id':jobId});
 
-            return resp.send({candidate:candidateUpdated,job:jobUpdated});
+            next({candidate:candidateUpdated,job:jobUpdated});
 
         }
         catch(err){
-            if(err.name == 'CastError') return resp.status(404).send( exMsg(404.3) );
-            if(err.name == 'ValidationError') return resp.status(412).send( exMsg(err.message) );
-            if(!err.error) return resp.status(err.error.status).send( err.error.message );
+            if(err.name == 'CastError') next( exMsg(404.3,404) );
+            if(err.name == 'ValidationError') next( exMsg(err.message,412) );
+            if(!err.error) next( err.error.message ,err.error.status );
             
 
             console.log(err);
-            return resp.status(500).send( exMsg(500) );
+            next( exMsg(500, 500) );
         }
 
     }
 
 
-    static async responseAddJobInCandidate(candidateId,jobId,resp){
+    static async responseAddJobInCandidate(candidateId,jobId,resp, next){
         const response = await this.addJobInCandidate(candidateId, jobId);
         if(!!response.error){
-            return resp.status(response.status).send( exMsg( response.error.message ) );
+            next( exMsg( response.error.message, response.status ) );
         }
-        return resp.send(response);
+        next(response);
     }
 
     static async addJobInCandidate(candidateId, jobId){

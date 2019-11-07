@@ -1,19 +1,16 @@
+const express = require('express');
+const router = express.Router();
 const Operator = require('../models/operator/operatorCandidates');
 
 
-module.exports = (Router)=>{
+    router.get( '/', (req,resp,next)=>{ Operator.routerGetAll(req,resp,next)} );
 
-    const router = Router();
+    router.post( '/register', (req,resp,next)=>{ Operator.routeCreateCandidate(req.body,resp,next)} );
 
-    router.get( '/', (req,resp)=>{ Operator.routerGetAll(req,resp)} );
+    router.get( '/candidate/:id', (req,resp,next)=>{ Operator.routeGetCandidateById(req.params.id,resp,next)} );
 
-    router.post( '/register', (req,resp)=>{ Operator.routeCreateCandidate(req.body,resp)} );
+    router.put( '/candidate/:id', (req,resp,next)=>{ Operator.routeUpdateCandidate(req,resp,next)} );
 
-    router.get( '/candidate/:id', (req,resp)=>{ Operator.routeGetCandidateById(req.params.id,resp)} );
+    router.delete( '/candidate/:id', (req,resp,next)=>{ Operator.routeDeleteCandidate(req.params.id,resp,next)} );
 
-    router.put( '/candidate/:id', (req,resp)=>{ Operator.routeUpdateCandidate(req,resp)} );
-
-    router.delete( '/candidate/:id', (req,resp)=>{ Operator.routerDeleteCandidate(req.params.id,resp)} );
-
-    return router;
-}
+    module.exports = router;

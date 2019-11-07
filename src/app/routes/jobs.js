@@ -1,18 +1,17 @@
+const express = require('express');
+const router = express.Router();
 const Operator = require('../models/operator/operatorJobs');
 
-module.exports = (Router)=>{
 
-    const router = Router();
+router.get( '/', ( req,resp,next )=>{ Operator.getAll( req,resp,next )} )
 
-    router.get( '/', ( req,resp )=>{ Operator.getAll( req,resp )} )
+router.post( '/register', ( req,resp,next )=>{ Operator.createJob( req,resp,next )} )
 
-    router.post( '/register', ( req,resp )=>{ Operator.createJob( req,resp )} )
+router.get( '/job/:id', ( req,resp,next )=>{ Operator.getJobById( req,resp,next )} )
 
-    router.get( '/job/:id', ( req,resp )=>{ Operator.getJobById( req,resp )} )
+router.put( '/job/:id', ( req,resp,next )=>{ Operator.updateJob( req,resp,next )} )
 
-    router.put( '/job/:id', ( req,resp )=>{ Operator.updateJob( req,resp )} )
+router.delete( '/job/:id', ( req,resp,next )=>{ Operator.deleteJob( req,resp,next )} )
 
-    router.delete( '/job/:id', ( req,resp )=>{ Operator.deleteJob( req,resp )} )
-
-    return router;
-}
+    
+module.exports = router;

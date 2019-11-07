@@ -1,29 +1,26 @@
 const Schema = require('../schema/schemaCandidates');
 const exMsg = require('../../infrastruct/exceptionMessage');
-const catcher = require('../../infrastruct/catcher');
 
 module.exports = class OperatorCandidates{
 
-    static async routerGetAll(req,resp){
-        return catcher( await this.getAll(), resp);
+    static async routerGetAll(req,resp,next){
+        next( await this.getAll());
 
     }
-    static async routeCreateCandidate(objInfo, resp){
-        return catcher( await  this.createCandidate(objInfo), resp );
+    static async routeCreateCandidate(objInfo, resp, next){
+        next( await  this.createCandidate(objInfo) );
 
     }
-    static async routeGetCandidateById(id, resp){
-
-        catcher( await this.getCandidateById(id), resp );
+    static async routeGetCandidateById(id, resp, next){
+        next( await this.getCandidateById(id));
     
     }
-    static async routeUpdateCandidate (req, resp){
-
-        return catcher( await this.updateCandidate(req.body, re.params.id) , resp);
+    static async routeUpdateCandidate (req, resp, next){
+        next( await this.updateCandidate(req.body, req.params.id) );
         
     }
-    static async routeDeleteCandidate(id, resp){
-        return catcher(await this.deleteCandidate(id),resp);
+    static async routeDeleteCandidate(id, resp, next){
+        next(await this.deleteCandidate(id),resp);
     }
 
     static async getAll(){
@@ -39,7 +36,7 @@ module.exports = class OperatorCandidates{
 
 
     }
-    static async createCandidate(objInfo){       
+    static async createCandidate(objInfo){
         
         try{
 
@@ -60,7 +57,7 @@ module.exports = class OperatorCandidates{
     }
     static async getCandidateById(id){
 
-        try{ return await Schema.find({'_id':id}) }
+        try{ return await Schema.find({_id:id}) }
         catch(err){
             if(err.name == 'CastError') return  exMsg(404.1,404);
             console.log(err); 
