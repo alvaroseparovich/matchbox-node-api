@@ -14,7 +14,6 @@ app.use(routes);
 //routes(app, express.Router);
 
 app.use((result, req,resp,next)=>{
-    console.log(result);
     if(!!result.error){
         return resp.status(result.status).send( exMsg( result.error.message ) );
     }
