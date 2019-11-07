@@ -5,29 +5,55 @@ module.exports = class OperatorJobs{
 
     static async getAll (req,resp,next){
 
-        const allJobs = await Schema.find();
-        next( allJobs );
+        next( this.getAll() );
     }
 
-    static async createJob (req, resp,next){
+    static async routeCreateJob (req, resp,next){
+
+        next(this.createJob(req.body));
+    }
+
+    static async routeGetJobById (req, resp,next){
+
+        next( this.getJobById(req.params.id));   
+    }
+
+    static async routeUpdateJob (req, resp,next){
+
+        next( this.updateJob(req.body, req.params.id));        
+    }
+
+    static async routeDeleteJob (req, resp,next){
+
+        next( this.deleteJob(req.params.id));
+
+    }
+
+
+    static async getAll (){
+        const allJobs = await Schema.find();
+        return allJobs ;
+
+    }
+    static async createJob (body){
 
         try{
         
-            const newJob = await Schema.create(req.body);
+            const newJob = await Schema.create(body);
             
-            next(newJob);
+            return newJob;
 
         }catch(err){
-            if(err.name == 'ValidationError') next( exMsg(err.message,412) );
+            if(err.name == 'ValidationError') return  exMsg(err.message,412);
 
             console.log(err); 
-            next( exMsg(500,500) );}
+            return  exMsg(500,500);
+        }
     }
-
-    static async getJobById (req, resp,next){
+    static async getJobById (id){
 
         try{
-            const job = await Schema.find({'_id':req.params.id});
+            const job = await Schema.find({'_id':id});
 
             next( job );
 
@@ -38,18 +64,16 @@ module.exports = class OperatorJobs{
             console.log(err); 
             next( exMsg(500,500) );
         }
-    
     }
-
-    static async updateJob (req, resp,next){
+    static async updateJob (body, id){
 
         try{
-            if( req.body.candidates )
+            if( body.candidates )
                 next( exMsg('You can not change candidates field. ',409) );
-            const result = await Schema.findByIdAndUpdate(req.params.id, req.body);
+            await Schema.findByIdAndUpdate(id, body);
 
             //todo: If there is no job with this id
-            const jobUpdated = await Schema.findOne({'_id':req.params.id});
+            const jobUpdated = await Schema.findOne({'_id':id});
 
             next(jobUpdated);
         }
@@ -61,15 +85,13 @@ module.exports = class OperatorJobs{
             console.log(err)
             next( exMsg(500,500) );
         }
-        
     }
-
-    static async deleteJob (req, resp,next){
+    static async deleteJob (id){
 
         try{
 
-            const result = await Schema.findByIdAndDelete(req.params.id);
-            
+            const result = await Schema.findByIdAndDelete(id);
+            console.log(result);
             next({message:'Job Deleted.'});
 
         }
@@ -79,7 +101,5 @@ module.exports = class OperatorJobs{
             console.log(err)
             next( exMsg(500,500) );
         }
-
     }
-
 }

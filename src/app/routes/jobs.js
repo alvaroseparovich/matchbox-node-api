@@ -3,7 +3,7 @@ const router = express.Router();
 const Operator = require('../models/operator/operatorJobs');
 
 
-router.get( '/', ( req,resp,next )=>{ Operator.getAll( req,resp,next )} )
+router.get( '/', (req, resp, next)=>{ Operator.routeGetAll(req, resp, next)} )
 
 router.post( '/register', ( req,resp,next )=>{ Operator.createJob( req,resp,next )} )
 
