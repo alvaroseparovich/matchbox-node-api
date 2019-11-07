@@ -40,7 +40,7 @@ module.exports = class OperatorJobs{
         try{
         
             const newJob = await Schema.create(body);
-            
+
             return newJob;
 
         }catch(err){
@@ -53,37 +53,35 @@ module.exports = class OperatorJobs{
     static async getJobById (id){
 
         try{
-            const job = await Schema.find({'_id':id});
-
-            next( job );
+            
+            return await Schema.find({'_id':id});
 
         }
         catch(err){
-            if(err.name == 'CastError') next( exMsg(404.2,400) );
+            if(err.name == 'CastError') return exMsg(404.2,400);
 
             console.log(err); 
-            next( exMsg(500,500) );
+            return exMsg(500,500) ;
         }
     }
     static async updateJob (body, id){
 
         try{
             if( body.candidates )
-                next( exMsg('You can not change candidates field. ',409) );
+                return exMsg('You can not change candidates field. ',409 );
             await Schema.findByIdAndUpdate(id, body);
 
             //todo: If there is no job with this id
-            const jobUpdated = await Schema.findOne({'_id':id});
+            return await Schema.findOne({'_id':id});
 
-            next(jobUpdated);
         }
         catch(err){
-            if(err.name == 'CastError') next( exMsg(404.2,404) );
-            if(err.name == 'ValidationError')  next( exMsg(err.message,412) );
+            if(err.name == 'CastError') return exMsg(404.2,404);
+            if(err.name == 'ValidationError')  return exMsg(err.message,412);
 
 
             console.log(err)
-            next( exMsg(500,500) );
+            return exMsg(500,500);
         }
     }
     static async deleteJob (id){
@@ -92,14 +90,14 @@ module.exports = class OperatorJobs{
 
             const result = await Schema.findByIdAndDelete(id);
             console.log(result);
-            next({message:'Job Deleted.'});
+            return {message:'Job Deleted.'};
 
         }
         catch(err){
-            if(err.name == 'CastError') next( exMsg(404.2,404) );
+            if(err.name == 'CastError') return exMsg(404.2,404);
 
             console.log(err)
-            next( exMsg(500,500) );
+            return exMsg(500,500);
         }
     }
 }
