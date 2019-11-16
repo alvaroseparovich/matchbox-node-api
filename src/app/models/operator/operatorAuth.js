@@ -2,6 +2,7 @@ const Schema = require('../schema/schemaCandidates');
 const exMsg = require('../../infrastruct/exceptionMessage');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const authJson = require('../../../config/auth')
 
 module.exports = class OperatorCandidates{
 
@@ -27,7 +28,8 @@ module.exports = class OperatorCandidates{
             
             user.password = undefined
             
-            return user;
+            const token = jwt.sign({id:user.id},authJson.secret, {expiresIn:86400})
+            return {user,token};
 
         }catch(err){
             console.log(err)
