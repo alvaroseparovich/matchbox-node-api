@@ -2,9 +2,12 @@ const fs = require('fs');
 const path = require('path');
 const express = require('express');
 const router = express.Router();
+const authMid = require('../../config/authorization');
 
 
 
+//authentication
+router.use(authMid)
 //Import all main routes at once
 const routes = {};
 fs
