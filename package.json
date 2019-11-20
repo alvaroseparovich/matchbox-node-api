@@ -4,7 +4,7 @@
   "description": "Simple CRUD API using Node.js and MongoDB",
   "main": "server.js",
   "scripts": {
-    "jest_test": "jest --detectOpenHandles",
+    "jest_test": "jest --forceExit",
     "test": "nodemon server.js --ignore __test__",
     "start": "node server.js"
   },
