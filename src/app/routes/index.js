@@ -7,7 +7,7 @@ const authMid = require('../../config/authorization');
 
 
 //authentication
-router.use(authMid)
+//router.use(authMid)
 //Import all main routes at once
 const routes = {};
 fs
